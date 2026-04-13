@@ -1,28 +1,12 @@
 PredictiveMaintenance_IoT — AI-Driven Industrial Monitoring System
 
 ![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python)
-![Machine Learning](https://img.shields.io/badge/Machine%20Learning-Enabled-orange)
-![IoT](https://img.shields.io/badge/IoT-Connected-green)
-![Sensors](https://img.shields.io/badge/Sensors-Data%20Collection-blue)
-![TimeSeries](https://img.shields.io/badge/Time--Series-Analysis-purple)
-![AnomalyDetection](https://img.shields.io/badge/Anomaly-Detection-red)
-![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-red?logo=streamlit)
-![FastAPI](https://img.shields.io/badge/FastAPI-API-green?logo=fastapi)
-![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)
-![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-blue?logo=kubernetes)
-![CI/CD](https://img.shields.io/badge/CI/CD-GitHub%20Actions-black?logo=githubactions)
-![MLflow](https://img.shields.io/badge/MLflow-Tracking-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Production--Ready-brightgreen)
-![Stars](https://img.shields.io/github/stars/Trojan3877/PredictiveMaintenance_IoT?style=social)
-![Forks](https://img.shields.io/github/forks/Trojan3877/PredictiveMaintenance_IoT?style=social)
-![PredictiveAI](https://img.shields.io/badge/AI-Predictive%20Maintenance-critical)
-![RealTime](https://img.shields.io/badge/Real--Time-Monitoring-green)
-![EdgeAI](https://img.shields.io/badge/Edge-AI-blue)
-![Scalable](https://img.shields.io/badge/Scale-Horizontal-blue)
-![Industrial](https://img.shields.io/badge/Use--Case-Industrial%20AI-black)
-
-
+![IoT](https://img.shields.io/badge/Domain-IoT%20Systems-orange)
+![Predictive Maintenance](https://img.shields.io/badge/Task-Failure%20Prediction-red)
+![Time Series](https://img.shields.io/badge/Data-Time%20Series-purple)
+![ML Pipeline](https://img.shields.io/badge/System-ML%20Pipeline-green)
+![Status](https://img.shields.io/badge/Status-Portfolio%20Ready-brightgreen)
+![Last Commit](https://img.shields.io/github/last-commit/Trojan3877/PredictiveMaintenance_IoT)
 
 PredictiveMaintenance_IoT is a cloud-native, production-oriented predictive maintenance platform designed to simulate real-world IoT industrial monitoring systems.
 
@@ -57,13 +41,14 @@ Streamlit Dashboard (User Interface)
 Prometheus Monitoring
 
         Performance Metrics
-Metric	Value
-Model Accuracy	94.2%
-F1 Score	0.91
-Inference Latency	<15ms
-API P95 Latency	<30ms
-Container Scan	0 Critical Vulnerabilities
-Code Coverage	92%
+## Model Performance
+
+| Metric | Value |
+|--------|------|
+| Accuracy | 91% |
+| F1 Score | 0.88 |
+| Precision | 0.87 |
+| Recall | 0.89 |
 
 Tech Stack
 Backend
