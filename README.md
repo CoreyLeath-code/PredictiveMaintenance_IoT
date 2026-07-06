@@ -26,6 +26,24 @@ Core Capabilities
 • Trivy container vulnerability scanning
 
 Architecture
+graph TD
+    A[IoT Sensor Data Stream] --> B(FastAPI Gateway)
+    
+    subgraph Edge Compute Node
+        B --> C{Primary ML Model: Anomaly Detection}
+        C -->|Status: Healthy| D[Log Metrics & Ignore]
+        
+        C -->|Status: Failure Predicted| E(Diagnostic LLM Agent: Phi-3 Mini)
+        E --> F[Generate Mitigation Strategy]
+    end
+    
+    F --> G(Alert Maintenance Dashboard)
+    
+    style E fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
+    style C fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+
+
+
 System Architecture Flow
 
 IoT Sensors
