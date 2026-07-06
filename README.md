@@ -16,25 +16,11 @@ The **PredictiveMaintenance-IoT** architecture is a multi-agent, edge-compute sy
 
 The system operates on a dual-agent topology. A lightweight anomaly detection model serves as the primary gateway, processing continuous sensor streams. The LLM diagnostic agent is highly constrained and computationally isolated, executing only when a critical failure threshold is breached.
 
-```mermaid
-graph TD
-    A[IoT Telemetry Stream] -->|Temperature, Vibration| B(FastAPI Edge Gateway)
+    <img width="1062" height="525" alt="image" src="https://github.com/user-attachments/assets/6c746b22-a4b1-4428-ab07-c5ba51d7034e" />
     
-    subgraph Edge Compute Node [Edge Compute Node: Tier 6 Docker Runtime]
-        B --> C{Primary ML: Anomaly Classifier}
-        C -->|P95 Latency < 12ms| D[Evaluate Threshold]
-        
-        D -->|Status: Healthy| E[Log & Bypass LLM]
-        D -->|Status: Critical| F(Diagnostic Agent: Phi-3 Mini)
-        
-        F -->|llama.cpp inference| G[Generate Mitigation Plan]
-    end
-    
-    E --> H(Data Lake / DVC)
-    G --> I(Maintenance Dashboard & Alerting)
-    
-    style F fill:#e1bee7,stroke:#8e24aa,stroke-width:2px
-    style C fill:#bbdefb,stroke:#1976d2,stroke-width:2px
+
+
+
 🛡️ The 9-Tier Deployment Hygiene InfrastructureThis repository enforces strict deployment gates, shifting security, performance benchmarking, and architectural documentation entirely left. No code reaches the production branch without satisfying the automated "invisible hand" of the CI/CD pipeline.TierObjectiveTooling / Implementation1. Static AnalysisEnforce standard logic & stylingRuff, Mypy (Strict type hinting)2. Unit & IntegrationValidate OOP logic & API endpointsPytest (>80% Code Coverage)3. Security & SASTGuard against CVEs and leaked secretsBandit, Trivy, Gitleaks4. Artifact VersioningEnsure model weight reproducibilityDVC (Data Version Control)5. ML BenchmarkingPrevent latency regressions and model driftpytest-benchmark, Automated PR Markdown6. ContainerizationMulti-stage, minimal runtime packagingDocker, C++ bindings compiled on build7. IaC SecurityValidate infrastructure provisioningCheckov, Terraform8. Progressive RolloutEphemeral staging & traffic routingKubernetes Canary Deployments9. Automated ReleaseSync documentation with production realitySemantic Release, Auto-generated L6 Docs🧠 Edge AI: Diagnostic Agent SpecificationsStandard generative models are too large and slow for real-time edge IoT gateways. This system utilizes Microsoft Phi-3 Mini (3.8B Parameters), strictly quantized to 4-bit (.gguf format), allowing advanced reasoning to fit within a ~2.5GB memory footprint.Inference Engine: llama-cpp-python configured for multithreaded CPU execution.Deterministic Output: Temperature locked to 0.1 to prevent hallucination in critical industrial environments.Interaction Flow: Documented extensively in dialog.md.📊 System Benchmarks (Production Baseline)Metrics dynamically evaluated via Tier 5 CI pipeline prior to merge.MetricBaseline TargetRealized PerformanceStatusPrimary Inference Latency (P95)< 15.0 ms10.1 ms🟢 PassedDiagnostic LLM TTFT< 2500 ms~1800 ms🟢 PassedFailure Detection F1-Score0.8890.894🟢 PassedEdge Memory Footprint< 3000 MB2650 MB🟢 Passed🚀 Quick Start (Local Development)PrerequisitesPython 3.10+Docker DesktopC++ Build Tools (Required for llama-cpp compilation)1. Standard InstallationBash# Clone the repository
 git clone [https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT.git](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT.git)
 cd PredictiveMaintenance_IoT
