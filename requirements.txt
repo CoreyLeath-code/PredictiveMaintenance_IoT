@@ -8,3 +8,5 @@ ruff
 mypy
 bandit
 llama-cpp-python
+httpx
+pandas
