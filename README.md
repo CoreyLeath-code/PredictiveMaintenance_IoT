@@ -11,12 +11,12 @@
 [![LLM: Phi-3 Mini](https://img.shields.io/badge/LLM-Microsoft_Phi--3-892CA0?style=for-the-badge&logo=microsoft)](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-## 📖 Executive Summary
+
 The **PredictiveMaintenance-IoT** architecture is a multi-agent, edge-compute system designed for real-time industrial telemetry analysis. It bridges the gap between traditional machine learning anomaly detection and generative AI reasoning. By deploying a heavily optimized, quantized Large Language Model (Microsoft Phi-3 Mini) directly to edge hardware, the system not only flags mechanical failures with sub-15ms latency but also generates deterministic, human-readable mitigation strategies for maintenance technicians without requiring a cloud round-trip.
 
 ---
 
-## 🏗️ System Architecture & Multi-Agent Flow
+## System Architecture & Multi-Agent Flow
 
 The system operates on a dual-agent topology. A lightweight anomaly detection model serves as the primary gateway, processing continuous sensor streams. The LLM diagnostic agent is highly constrained and computationally isolated, executing only when a critical failure threshold is breached.
 
