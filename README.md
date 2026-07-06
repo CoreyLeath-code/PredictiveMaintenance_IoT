@@ -1,4 +1,4 @@
-# 🏭 PredictiveMaintenance-IoT: Edge-Compute Diagnostic AI
+#  PredictiveMaintenance-IoT: Edge-Compute Diagnostic AI
 
 [![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-9--Tier_Enterprise-0078D4?style=for-the-badge&logo=githubactions)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions)
 [![Coverage: 85%](https://img.shields.io/badge/Coverage-85%25-brightgreen.svg?style=for-the-badge)](https://pytest-cov.readthedocs.io/en/latest/)
