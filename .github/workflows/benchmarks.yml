@@ -1,0 +1,73 @@
+name: Tier 5 - Model & Performance Benchmarks
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'src/models/**'
+      - 'src/data/**'
+      - 'requirements.txt'
+
+jobs:
+  benchmark-eval:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for baseline comparison
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest-benchmark
+
+      - name: Pull Data & Model Artifacts (DVC)
+        run: |
+          # Assuming DVC is configured with remote storage (e.g., S3/GCP)
+          # dvc pull
+          echo "Simulating DVC pull for IoT datasets..."
+
+      - name: Run Inference Speed Benchmarks
+        id: compute_benchmarks
+        run: |
+          # Run pytest benchmarks on the inference engine
+          pytest tests/performance/ --benchmark-json=benchmark-results.json
+          
+      - name: Evaluate Model Accuracy metrics
+        id: model_metrics
+        run: |
+          # Script to output F1, Precision, Recall to a markdown file
+          python src/scripts/evaluate_model.py --output metrics.md
+          
+      - name: Report Benchmarks to PR
+        uses: mshick/add-pr-comment@v2
+        if: always()
+        with:
+          message-path: |
+            metrics.md
+          message: |
+            ### 📊 Predictive Maintenance Benchmark Results
+            *The invisible hand of the architecture has evaluated your changes.*
+            
+            **Performance highlights:**
+            - Check `benchmark-results.json` in artifacts for detailed latency metrics.
+            - Ensure inference time remains strictly under the required real-time threshold.
+
+      - name: Upload Benchmark Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-benchmarks
+          path: benchmark-results.json
