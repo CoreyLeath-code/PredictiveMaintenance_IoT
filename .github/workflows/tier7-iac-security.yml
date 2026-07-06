@@ -1,0 +1,21 @@
+name: Tier 7 - IaC Security & Validation
+
+on:
+  pull_request:
+    paths:
+      - 'infrastructure/**' # Assuming your Terraform/IaC files are here
+
+jobs:
+  iac-validation:
+    name: Checkov Infrastructure Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run Checkov (SAST for IaC)
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: infrastructure/
+          framework: terraform
+          soft_fail: false # Fails the build if high-severity IaC flaws are found
