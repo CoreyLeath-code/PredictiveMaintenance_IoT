@@ -1,0 +1,37 @@
+name: Tier 9 - Semantic Release & Documentation
+
+on:
+  workflow_run:
+    workflows: ["Tier 8 - Canary Deployment Verification"]
+    types:
+      - completed
+
+jobs:
+  release-and-document:
+    name: Generate Release & L6 Docs
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Python Semantic Release
+        uses: python-semantic-release/python-semantic-release@v8.3.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Compile Architecture Diagrams (Mermaid.js)
+        run: |
+          echo "Auto-generating updated L6 Mermaid graphs based on new pipeline components..."
+          # Execute doc-generation script here
+          
+      - name: Deploy Documentation to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/build/html # Path to compiled L6 documentation
