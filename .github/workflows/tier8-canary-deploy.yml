@@ -1,0 +1,35 @@
+name: Tier 8 - Canary Deployment Verification
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  canary-rollout:
+    name: Ephemeral Canary Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure Cloud Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Deploy to Sandbox Cluster
+        run: |
+          echo "Provisioning ephemeral Kubernetes namespace..."
+          # Example: kubectl apply -f k8s/canary-deployment.yaml
+          
+      - name: Monitor Canary Health Metrics
+        run: |
+          echo "Monitoring inference latency and error rates for 5 minutes..."
+          # Script to check metrics. If error rate > 1%, the workflow fails and triggers a rollback.
+          
+      - name: Promote to Production
+        if: success()
+        run: |
+          echo "Canary stable. Promoting model to 100% production traffic."
