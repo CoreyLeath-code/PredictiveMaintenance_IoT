@@ -1,26 +1,28 @@
-FROM python:3.11-slim
+# ========================================================
+# Stage 1: Build & Dependency Resolution
+# ========================================================
+FROM python:3.10-slim AS builder
 
 WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
 
-# Install dependencies first for better layer caching
-COPY requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+COPY requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
 
-# Copy application code
-COPY api/ ./api/
-COPY models/ ./models/
-COPY dashboard/ ./dashboard/
-COPY sensor_data.csv ./
+# ========================================================
+# Stage 2: Minimal Production Runtime
+# ========================================================
+FROM python:3.10-slim AS runner
 
-# Create a non-root user for security
-RUN useradd --no-create-home --shell /bin/false appuser \
-    && chown -R appuser:appuser /app
-USER appuser
+WORKDIR /app
+RUN groupadd -r MLOpsUser && useradd -r -g MLOpsUser MLOpsUser
+
+# Copy installed dependencies from the builder layer
+COPY --from=builder /root/.local /home/MLOpsUser/.local
+COPY src/ /app/src/
+
+ENV PATH=/home/MLOpsUser/.local/bin:$PATH
+USER MLOpsUser
 
 EXPOSE 8000
-EXPOSE 8501
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
-    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
-
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+ENTRYPOINT ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
