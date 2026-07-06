@@ -1,6 +1,7 @@
 """FastAPI Edge Gateway for Predictive Maintenance IoT."""
 
 import os
+from typing import Any, Dict, Optional, cast
 from fastapi import FastAPI
 from pydantic import BaseModel
 
@@ -8,6 +9,9 @@ app = FastAPI(title="Predictive Maintenance & Diagnostic API")
 
 # Define the expected path for the quantized Phi-3 model
 MODEL_PATH = "./models/phi-3-mini-4k-instruct-q4.gguf"
+
+# Explicitly type hint the LLM variable to allow None in CI environments
+llm: Optional[Any] = None
 
 # Graceful fallback for CI/CD testing environments
 if os.path.exists(MODEL_PATH):
@@ -18,7 +22,6 @@ if os.path.exists(MODEL_PATH):
         n_threads=4
     )
 else:
-    llm = None
     print("Warning: Phi-3 model not found. Running in CI/Mock mode.")
 
 class SensorData(BaseModel):
@@ -29,12 +32,12 @@ class SensorData(BaseModel):
     anomaly_detected: bool
 
 @app.get("/health")
-def health_check():
+def health_check() -> Dict[str, str]:
     """Tier 6 container health validation endpoint."""
     return {"status": "healthy"}
 
 @app.post("/diagnose")
-def generate_mitigation_strategy(data: SensorData):
+def generate_mitigation_strategy(data: SensorData) -> Dict[str, Any]:
     """
     Multi-agent routing endpoint.
     Bypasses LLM if healthy, triggers Phi-3 inference if critical.
@@ -65,12 +68,15 @@ Status: CRITICAL ANOMALY PREDICTED
 """
 
     # Execute deterministic text generation
-    output = llm(
+    raw_output = llm(
         prompt, 
         max_tokens=150, 
         stop=["<|user|>", "\n\n"], 
         temperature=0.1
     )
+    
+    # Cast the output to a standard Dictionary to satisfy Mypy's strict indexable checks
+    output = cast(Dict[str, Any], raw_output)
 
     return {
         "sensor_id": data.sensor_id,
