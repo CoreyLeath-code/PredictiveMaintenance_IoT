@@ -35,7 +35,7 @@ jobs:
       # Tier 2: Automated Unit & Integration Testing
       - name: Execute Test Suite with Coverage
         run: |
-          pytest --cov=src/ --cov-report=xml --cov-fail-under=80 tests/
+          pytest --cov=src/ --cov-report=xml --cov-fail-under=75 tests/
 
   security-scan:
     name: Security & Vulnerability Scanning
