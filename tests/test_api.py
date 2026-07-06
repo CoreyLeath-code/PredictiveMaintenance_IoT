@@ -1,7 +1,5 @@
 """Unit tests for the FastAPI prediction and diagnostic endpoints."""
 
-import joblib
-import numpy as np
 from fastapi.testclient import TestClient
 
 # Import the FastAPI app instance from your source code
