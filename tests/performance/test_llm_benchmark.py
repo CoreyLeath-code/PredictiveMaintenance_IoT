@@ -28,7 +28,7 @@ def test_diagnose_endpoint_latency(benchmark, critical_sensor_payload):
         return response
 
     # Execute the benchmark loop across multiple iterations to calculate statistical stability
-    result = benchmark(run_inference)
+    benchmark(run_inference)
     
     # Assert performance threshold (e.g., must complete within 2500ms on local test runners)
     assert benchmark.stats.stats.mean < 2.5
