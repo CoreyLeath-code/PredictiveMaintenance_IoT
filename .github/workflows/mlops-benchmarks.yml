@@ -1,0 +1,63 @@
+name: Tier 5 - Performance & Model Benchmarks
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/models/**'
+      - 'src/features/**'
+      - 'requirements.txt'
+
+jobs:
+  benchmark-evaluation:
+    name: Model Drift and Speed Evaluation
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          cache: 'pip'
+
+      - name: Install Runtime Requirements
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pytest-benchmark
+
+      - name: Synchronize MLOps Artifacts (DVC Pull)
+        env:
+          DVC_REMOTE_TOKEN: ${{ secrets.DVC_REMOTE_TOKEN }}
+        run: |
+          # Simulating data pull step for validation vectors and baseline models
+          echo "Syncing structural validation datasets..."
+
+      - name: Execute Latency Profiling
+        run: |
+          # Benchmarks data transformations and inference execution loops
+          pytest tests/performance/ --benchmark-json=benchmark_report.json
+
+      - name: Evaluate Model Accuracy Metrics
+        id: eval_metrics
+        run: |
+          # Executes an internal evaluation script comparing current branch against main branch parameters
+          # The script saves a markdown table formatted directly to a text file
+          python src/scripts/evaluate_pipeline.py --output-path metrics_comparison.md
+
+      - name: Post Performance Report to PR
+        uses: mshick/add-pr-comment@v2
+        if: always()
+        with:
+          message-path: |
+            metrics_comparison.md
+          message: |
+            ### 📊 Production Deployment Hygiene: Tier 5 Report
+            Automated system latency and model telemetry evaluation completed.
