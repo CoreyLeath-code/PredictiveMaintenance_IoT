@@ -1,9 +1,13 @@
 # 🏭 PredictiveMaintenance-IoT: Edge-Compute Diagnostic AI
 
 [![CI/CD Pipeline](https://img.shields.io/badge/CI%2FCD-9--Tier_Enterprise-0078D4?style=for-the-badge&logo=githubactions)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions)
+[![Coverage: 85%](https://img.shields.io/badge/Coverage-85%25-brightgreen.svg?style=for-the-badge)](https://pytest-cov.readthedocs.io/en/latest/)
 [![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg?style=for-the-badge)](https://github.com/astral-sh/ruff)
+[![Checked with mypy](https://img.shields.io/badge/mypy-Strict_Typing-164165?style=for-the-badge&logo=python&logoColor=white)](https://mypy-lang.org/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-3776AB.svg?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Edge_Gateway-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![Docker Verified](https://img.shields.io/badge/Docker-Edge_Optimized-2496ED?style=for-the-badge&logo=docker)](https://www.docker.com/)
+[![Data Version Control](https://img.shields.io/badge/DVC-Artifact_Sync-13bce9?style=for-the-badge&logo=dvc&logoColor=white)](https://dvc.org/)
 [![LLM: Phi-3 Mini](https://img.shields.io/badge/LLM-Microsoft_Phi--3-892CA0?style=for-the-badge&logo=microsoft)](https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
