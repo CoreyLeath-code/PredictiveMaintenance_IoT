@@ -1,29 +1,59 @@
+"""FastAPI Edge Gateway for Predictive Maintenance IoT."""
+
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
-from llama_cpp import Llama
 
 app = FastAPI(title="Predictive Maintenance & Diagnostic API")
 
-# Initialize the quantized Phi-3 model (loaded into memory on startup)
-# Ensure you download 'phi-3-mini-4k-instruct-q4.gguf' to the /models directory
-llm = Llama(
-    model_path="./models/phi-3-mini-4k-instruct-q4.gguf",
-    n_ctx=2048,  # Context window
-    n_threads=4  # Optimize for edge CPU
-)
+# Define the expected path for the quantized Phi-3 model
+MODEL_PATH = "./models/phi-3-mini-4k-instruct-q4.gguf"
+
+# Graceful fallback for CI/CD testing environments
+if os.path.exists(MODEL_PATH):
+    from llama_cpp import Llama
+    llm = Llama(
+        model_path=MODEL_PATH,
+        n_ctx=2048,
+        n_threads=4
+    )
+else:
+    llm = None
+    print("Warning: Phi-3 model not found. Running in CI/Mock mode.")
 
 class SensorData(BaseModel):
+    """Schema for incoming IoT sensor telemetry."""
     sensor_id: int
     temperature: float
     vibration: float
     anomaly_detected: bool
 
+@app.get("/health")
+def health_check():
+    """Tier 6 container health validation endpoint."""
+    return {"status": "healthy"}
+
 @app.post("/diagnose")
 def generate_mitigation_strategy(data: SensorData):
+    """
+    Multi-agent routing endpoint.
+    Bypasses LLM if healthy, triggers Phi-3 inference if critical.
+    """
+    # Agent Routing: Bypass LLM if no anomaly is detected
     if not data.anomaly_detected:
-        return {"status": "Healthy", "mitigation": "None required."}
+        return {
+            "status": "Healthy", 
+            "mitigation": "None required."
+        }
 
-    # Construct the strict prompt for the LLM
+    # CI/CD Test Mode: Return deterministic mock if model is missing
+    if llm is None:
+        return {
+            "sensor_id": data.sensor_id,
+            "mitigation_plan": "1. [CI/TEST MODE] Initiate mock shutdown.\n2. [CI/TEST MODE] Perform mock inspection."
+        }
+
+    # Edge AI Mode: Generate localized mitigation strategy via Phi-3
     prompt = f"""<|system|>
 You are an expert industrial maintenance AI. Analyze the sensor data and provide a concise, 3-step mitigation strategy for the technician. Do not hallucinate.
 <|user|>
@@ -34,12 +64,12 @@ Status: CRITICAL ANOMALY PREDICTED
 <|assistant|>
 """
 
-    # Generate the response using Phi-3
+    # Execute deterministic text generation
     output = llm(
-        prompt,
-        max_tokens=150,
-        stop=["<|user|>", "\n\n"],
-        temperature=0.1 # Keep it highly deterministic, no creative guessing
+        prompt, 
+        max_tokens=150, 
+        stop=["<|user|>", "\n\n"], 
+        temperature=0.1
     )
 
     return {
