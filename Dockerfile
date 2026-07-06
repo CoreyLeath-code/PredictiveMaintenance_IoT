@@ -1,24 +1,29 @@
-# ========================================================
-# Stage 1: Build & Dependency Resolution
-# ========================================================
 FROM python:3.10-slim AS builder
 
 WORKDIR /app
-RUN apt-get update && apt-get install -y --no-install-recommends gcc build-essential && rm -rf /var/lib/apt/lists/*
+# Install C++ compiler required for llama-cpp-python
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc build-essential g++ wget \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir --user -r requirements.txt
+# Install standard requirements plus llama-cpp-python
+RUN pip install --no-cache-dir --user -r requirements.txt llama-cpp-python
 
-# ========================================================
-# Stage 2: Minimal Production Runtime
-# ========================================================
+# Download the quantized Phi-3 Mini model (4-bit quantization)
+RUN mkdir -p /app/models && \
+    wget -O /app/models/phi-3-mini-4k-instruct-q4.gguf \
+    "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct-gguf/resolve/main/Phi-3-mini-4k-instruct-q4.gguf"
+
+# --- Stage 2: Minimal Runtime ---
 FROM python:3.10-slim AS runner
 
 WORKDIR /app
 RUN groupadd -r MLOpsUser && useradd -r -g MLOpsUser MLOpsUser
 
-# Copy installed dependencies from the builder layer
+# Copy installed dependencies and the downloaded model
 COPY --from=builder /root/.local /home/MLOpsUser/.local
+COPY --from=builder /app/models /app/models
 COPY src/ /app/src/
 
 ENV PATH=/home/MLOpsUser/.local/bin:$PATH
