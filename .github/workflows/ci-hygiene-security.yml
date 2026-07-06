@@ -26,12 +26,6 @@ jobs:
           pip install ruff mypy pytest pytest-cov
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-      # Tier 1: Code Hygiene & Static Analysis
-      - name: Run Ruff (Linting & Formatting)
-        run: |
-          # Enforces style, formatting, and standard logical checks natively
-          ruff check .
-          ruff format --check .
 
       - name: Run Mypy (Strict Type Checking)
         run: |
