@@ -16,8 +16,7 @@ The **PredictiveMaintenance-IoT** architecture is a multi-agent, edge-compute sy
 
 The system operates on a dual-agent topology. A lightweight anomaly detection model serves as the primary gateway, processing continuous sensor streams. The LLM diagnostic agent is highly constrained and computationally isolated, executing only when a critical failure threshold is breached.
 
-    <img width="1062" height="525" alt="image" src="https://github.com/user-attachments/assets/6c746b22-a4b1-4428-ab07-c5ba51d7034e" />
-    
+<img width="623" height="431" alt="image" src="https://github.com/user-attachments/assets/05dbbd52-1032-421d-aab6-55640854e6d8" />
 
 
 
