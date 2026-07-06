@@ -5,6 +5,9 @@ from typing import Any, Dict, Optional, cast
 from fastapi import FastAPI
 from pydantic import BaseModel
 
+# Import the newly created deterministic Safety Agent
+from src.agents.safety_agent import safety_monitor
+
 app = FastAPI(title="Predictive Maintenance & Diagnostic API")
 
 # Define the expected path for the quantized Phi-3 model
@@ -40,23 +43,25 @@ def health_check() -> Dict[str, str]:
 def generate_mitigation_strategy(data: SensorData) -> Dict[str, Any]:
     """
     Multi-agent routing endpoint.
-    Bypasses LLM if healthy, triggers Phi-3 inference if critical.
+    1. Bypasses LLM if healthy.
+    2. Triggers Phi-3 inference if critical.
+    3. Routes output through Safety Agent for deterministic verification.
     """
-    # Agent Routing: Bypass LLM if no anomaly is detected
+    # Agent 1 (Classifier Proxy): Bypass generative AI if no anomaly is detected
     if not data.anomaly_detected:
         return {
             "status": "Healthy", 
             "mitigation": "None required."
         }
 
-    # CI/CD Test Mode: Return deterministic mock if model is missing
+    # CI/CD Test Mode Fallback
     if llm is None:
         return {
             "sensor_id": data.sensor_id,
             "mitigation_plan": "1. [CI/TEST MODE] Initiate mock shutdown.\n2. [CI/TEST MODE] Perform mock inspection."
         }
 
-    # Edge AI Mode: Generate localized mitigation strategy via Phi-3
+    # Agent 2 (Generative): Draft mitigation strategy via Phi-3
     prompt = f"""<|system|>
 You are an expert industrial maintenance AI. Analyze the sensor data and provide a concise, 3-step mitigation strategy for the technician. Do not hallucinate.
 <|user|>
@@ -77,8 +82,16 @@ Status: CRITICAL ANOMALY PREDICTED
     
     # Cast the output to a standard Dictionary to satisfy Mypy's strict indexable checks
     output = cast(Dict[str, Any], raw_output)
+    draft_plan = output['choices'][0]['text'].strip()
+
+    # Agent 3 (Deterministic Safety): Verify the drafted plan against physics rules
+    sensor_dict = {
+        "temperature": data.temperature,
+        "vibration": data.vibration
+    }
+    final_verified_plan = safety_monitor.verify_and_override(sensor_dict, draft_plan)
 
     return {
         "sensor_id": data.sensor_id,
-        "mitigation_plan": output['choices'][0]['text'].strip()
+        "mitigation_plan": final_verified_plan
     }
