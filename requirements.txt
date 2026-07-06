@@ -10,3 +10,5 @@ bandit
 llama-cpp-python
 httpx
 pandas
+scikit-learn
+joblib
