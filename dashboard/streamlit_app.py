@@ -1,53 +1,44 @@
-import os
+"""Streamlit Dashboard for PredictiveMaintenance-IoT."""
 
-import requests
 import streamlit as st
+import requests  # type: ignore
 
-API_URL = os.getenv("API_URL", "http://localhost:8000") + "/predict"
-REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "10"))
+st.set_page_config(page_title="Edge AI Diagnostic Dashboard", layout="wide")
 
-st.set_page_config(page_title="Predictive Maintenance Dashboard", layout="wide")
+st.title("🏭 PredictiveMaintenance-IoT Command Center")
+st.markdown("Monitor edge sensor streams and verify Multi-Agent diagnostic logic.")
 
-st.title("🏭 Predictive Maintenance IoT Dashboard")
+# Sidebar Controls
+st.sidebar.header("Simulator Controls")
+sensor_id = st.sidebar.slider("Sensor ID", 100, 999, 101)
+temp = st.sidebar.slider("Temperature (°C)", 20.0, 120.0, 45.0)
+vib = st.sidebar.slider("Vibration (g)", 0.0, 10.0, 0.1)
+anomaly = st.sidebar.toggle("Simulate Anomaly Detected", value=False)
 
-st.markdown("Enter sensor readings to predict equipment failure risk.")
-
-# Sensor inputs
-temperature = st.slider("Temperature (°C)", 0.0, 150.0, 75.0)
-vibration = st.slider("Vibration (mm/s)", 0.0, 50.0, 10.0)
-pressure = st.slider("Pressure (psi)", 0.0, 300.0, 120.0)
-
-if st.button("Predict Failure Risk"):
+if st.sidebar.button("Execute Diagnostic Request"):
     payload = {
-        "temperature": temperature,
-        "vibration": vibration,
-        "pressure": pressure,
+        "sensor_id": sensor_id,
+        "temperature": temp,
+        "vibration": vib,
+        "anomaly_detected": anomaly
     }
-
+    
+    # Point this to your FastAPI container (localhost:8000 if running locally)
     try:
-        response = requests.post(API_URL, json=payload, timeout=REQUEST_TIMEOUT)
-        response.raise_for_status()
+        response = requests.post("http://localhost:8000/diagnose", json=payload)
         result = response.json()
+        
+        st.subheader("Agent Output:")
+        st.json(result)
+        
+        if "SAFETY OVERRIDE" in result.get("mitigation_plan", ""):
+            st.error("Safety Monitor Intercepted Hazardous Instruction!")
+        elif anomaly:
+            st.success("Phi-3 Diagnostic Plan Generated.")
+            
+    except Exception as e:
+        st.error(f"Failed to connect to Edge Gateway: {e}")
 
-        failure_risk = result["failure_risk"]
-        probability = result.get("probability", None)
-
-        if failure_risk == 1:
-            msg = "⚠ High Risk of Equipment Failure"
-            if probability is not None:
-                msg += f" (probability: {probability:.1%})"
-            st.error(msg)
-        else:
-            msg = "✅ Equipment Operating Normally"
-            if probability is not None:
-                msg += f" (probability: {probability:.1%})"
-            st.success(msg)
-
-    except requests.exceptions.ConnectionError:
-        st.error("❌ Cannot connect to the prediction API. Is it running?")
-    except requests.exceptions.Timeout:
-        st.error("⏱ Request timed out. The API may be overloaded.")
-    except requests.exceptions.HTTPError as exc:
-        st.error(f"API returned an error: {exc.response.status_code} {exc.response.text}")
-    except (KeyError, ValueError) as exc:
-        st.error(f"Unexpected response format from API (missing or invalid fields): {exc}")
+# Add a visual architecture summary
+st.divider()
+st.markdown("### Architecture Flow")
