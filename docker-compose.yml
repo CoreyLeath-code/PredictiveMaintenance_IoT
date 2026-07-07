@@ -19,7 +19,20 @@ services:
       timeout: 10s
       start_period: 15s
       retries: 3
-
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+  dashboard:
+    image: streamlit-dashboard
+    build: 
+      context: .
+      dockerfile: Dockerfile.dashboard
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
   dashboard:
     build: .
     container_name: predictive_dashboard
