@@ -3,7 +3,7 @@ name: predmaint
 description: Helm chart for PredictiveMaintenance IoT (sensor ingest → ML model → API)
 type: application
 version: 0.1.0
-appVersion: "0.1.0"
+appVersion: "1.0.3"
 keywords:
   - predictive-maintenance
   - iot
@@ -13,4 +13,4 @@ keywords:
 maintainers:
   - name: Corey Leath
     email: coreyleath10@gmail.com
-icon: https://raw.githubusercontent.com/Trojan3877/PredictiveMaintenance_IoT/main/docs/flowchart.png
+icon: https://raw.githubusercontent.com/CoreyLeath-code/PredictiveMaintenance_IoT/main/docs/flowchart.png

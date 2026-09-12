@@ -1,7 +1,7 @@
 site_name: PredictiveMaintenance IoT Docs
-site_url: https://trojan3877.github.io/PredictiveMaintenance_IoT/
-repo_name: Trojan3877/PredictiveMaintenance_IoT
-repo_url: https://github.com/Trojan3877/PredictiveMaintenance_IoT
+site_url: https://coreyleath-code.github.io/PredictiveMaintenance_IoT/
+repo_name: CoreyLeath-code/PredictiveMaintenance_IoT
+repo_url: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT
 edit_uri: blob/main/
 
 theme:

@@ -8,7 +8,7 @@ Follow the steps below to get set up, propose changes, and open a successful pul
 ## 1 — Local Setup
 
 ```bash
-git clone https://github.com/Trojan3877/PredictiveMaintenance_IoT.git
+git clone https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT.git
 cd PredictiveMaintenance_IoT
 dotnet restore
 dotnet build
