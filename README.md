@@ -1,5 +1,11 @@
 # PredictiveMaintenance IoT — Edge Diagnostic AI
 
+<!-- portfolio-lifecycle-badges:start -->
+[![Latest release](https://img.shields.io/github/v/release/CoreyLeath-code/PredictiveMaintenance_IoT?display_name=tag&sort=semver)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/releases/latest)
+[![Lifecycle documentation](https://img.shields.io/badge/lifecycle-documented-2563eb)](#ownership-promotion-and-operational-lifecycle)
+[![Maintainer](https://img.shields.io/badge/maintainer-Corey%20Leath-111827)](https://github.com/CoreyLeath-code)
+<!-- portfolio-lifecycle-badges:end -->
+
 [![CI](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/ci.yml)
 [![Benchmarks](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/benchmarks.yml)
 [![Container Scan](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml/badge.svg?branch=main)](https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT/actions/workflows/container-scan.yml)
