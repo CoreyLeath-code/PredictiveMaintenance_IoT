@@ -1,0 +1,42 @@
+name: Compose Deployment Security
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docker-compose.yml"
+      - "Dockerfile.dashboard"
+      - "dashboard/**"
+      - ".github/workflows/compose-security.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "docker-compose.yml"
+      - "Dockerfile.dashboard"
+      - "dashboard/**"
+      - ".github/workflows/compose-security.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  compose-config:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Compose config and non-public default bindings
+        run: |
+          set -euo pipefail
+          docker compose -f docker-compose.yml config --quiet
+          docker compose -f docker-compose.yml config --format json > /tmp/compose.json
+          python - <<'PY'
+          import json
+          data = json.load(open("/tmp/compose.json", encoding="utf-8"))
+          assert set(data["services"]) == {"api", "dashboard"}, data["services"].keys()
+          for service in data["services"].values():
+              for port in service.get("ports", []):
+                  assert port["host_ip"] == "127.0.0.1", port
+          PY
+      - name: Build dashboard image
+        run: docker build --file Dockerfile.dashboard --tag predmaint-dashboard:ci .
