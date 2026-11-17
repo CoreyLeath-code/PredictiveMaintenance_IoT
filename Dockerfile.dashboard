@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+RUN groupadd --system dashboard && useradd --system --gid dashboard --uid 10002 --create-home dashboard
+RUN python -m pip install --no-cache-dir "streamlit==1.67.0" "requests==2.34.2"
+COPY --chown=dashboard:dashboard dashboard/ /app/dashboard/
+USER 10002
+
+EXPOSE 8501
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3)"
+
+CMD ["streamlit", "run", "dashboard/streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501", "--server.headless=true"]
