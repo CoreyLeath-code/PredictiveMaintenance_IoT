@@ -53,7 +53,7 @@ jobs:
           python src/scripts/evaluate_pipeline.py --output-path metrics_comparison.md
 
       - name: Post Performance Report to PR
-        uses: mshick/add-pr-comment@v2
+        uses: mshick/add-pr-comment@v3
         if: always()
         with:
           message-path: |
