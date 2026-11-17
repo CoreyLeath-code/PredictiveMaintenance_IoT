@@ -1,50 +1,50 @@
-version: "3.8"
-
+# Local demo configuration. Only the API and dashboard are published,
+# both bound to loopback unless the operator explicitly changes the bind address.
 services:
   api:
-    build: .
-    container_name: predictive_api
-    ports:
-      - "8000:8000"
-    command: uvicorn api.main:app --host 0.0.0.0 --port 8000
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
     environment:
-      - MODEL_PATH=/app/models/model.pkl
+      - ALLOW_MOCK_DIAGNOSTICS=${ALLOW_MOCK_DIAGNOSTICS:-false}
+    ports:
+      - "${PREDMAINT_BIND_ADDRESS:-127.0.0.1}:8000:8000"
     volumes:
       - model_data:/app/models
-    restart: unless-stopped
     healthcheck:
-      test: ["CMD", "python", "-c",
-             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3)"
       interval: 30s
-      timeout: 10s
+      timeout: 5s
       start_period: 15s
       retries: 3
-services:
-  api:
-    build: .
-    ports:
-      - "8000:8000"
+
   dashboard:
-    image: streamlit-dashboard
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile.dashboard
-    ports:
-      - "8501:8501"
-    depends_on:
-      - api
-  dashboard:
-    build: .
-    container_name: predictive_dashboard
-    ports:
-      - "8501:8501"
-    command: streamlit run dashboard/streamlit_app.py --server.port 8501 --server.address 0.0.0.0
+    restart: unless-stopped
     environment:
       - API_URL=http://api:8000
-    restart: unless-stopped
+    ports:
+      - "${PREDMAINT_BIND_ADDRESS:-127.0.0.1}:8501:8501"
     depends_on:
       api:
         condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=3)"
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
 
 volumes:
   model_data:
