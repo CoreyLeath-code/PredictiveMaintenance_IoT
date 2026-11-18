@@ -38,7 +38,7 @@ jobs:
         if: always()
         run: |
           if [ -s trivy-image-results.json ]; then
-            jq -r '.Results[] | select(.Vulnerabilities and (.Vulnerabilities | length > 0)) | .Target as $target | .Vulnerabilities[] | "\\($target) \\(.PkgName)@\\(.InstalledVersion) \\(.VulnerabilityID)"' trivy-image-results.json
+            jq -r '.Results[] | select((.Vulnerabilities // []) | length > 0) | .Target as $target | .Vulnerabilities[] | [$target, (.PkgName + "@" + .InstalledVersion), .VulnerabilityID] | @tsv' trivy-image-results.json
           fi
 
       # Generate SPDX SBOM
