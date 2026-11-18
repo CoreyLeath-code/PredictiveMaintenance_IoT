@@ -23,3 +23,15 @@ jobs:
 
       - name: Run tests with coverage
         run: pytest tests/test_api.py tests/test_train.py --cov=api --cov=models --cov-report=term-missing -v
+
+  container-build:
+    name: Python 3.11 API and dashboard container builds
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build API image with native dependencies
+        run: docker build --tag predictive-maintenance-api:ci -f Dockerfile .
+      - name: Build dashboard image
+        run: docker build --tag predictive-maintenance-dashboard:ci -f Dockerfile.dashboard .
