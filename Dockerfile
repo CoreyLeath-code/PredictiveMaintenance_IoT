@@ -23,6 +23,16 @@ ENV PATH=/opt/venv/bin:$PATH \
 
 WORKDIR /app
 
+# Install patched Debian runtime libraries (including zlib), then remove apt indexes.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends --only-upgrade zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
+# The base image ships older packaging utilities visible to image scanners.
+# Upgrade their system-level copies (distinct from /opt/venv in the builder).
+RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade \
+    "setuptools>=78.1.1" "wheel>=0.46.2" "jaraco.context>=6.1.0"
+
 RUN groupadd --system mlops \
     && useradd --system --gid mlops --uid 10001 --create-home mlops \
     && mkdir -p /app/models \
