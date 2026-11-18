@@ -28,10 +28,18 @@ jobs:
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: predmaint-scan:ci
-          format: table
+          format: json
+          output: trivy-image-results.json
           exit-code: 1
           ignore-unfixed: true
           severity: CRITICAL,HIGH
+
+      - name: Report finding locations without relaxing security gate
+        if: always()
+        run: |
+          if [ -s trivy-image-results.json ]; then
+            jq -r '.Results[] | select(.Vulnerabilities and (.Vulnerabilities | length > 0)) | .Target as $target | .Vulnerabilities[] | "\\($target) \\(.PkgName)@\\(.InstalledVersion) \\(.VulnerabilityID)"' trivy-image-results.json
+          fi
 
       # Generate SPDX SBOM
       - name: 📜 Generate SBOM (SPDX)
