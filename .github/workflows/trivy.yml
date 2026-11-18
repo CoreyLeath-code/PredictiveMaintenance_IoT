@@ -10,6 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build -t predictive-maintenance .
-      - uses: aquasecurity/trivy-action@master
+      - uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: predictive-maintenance
