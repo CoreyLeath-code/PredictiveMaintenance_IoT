@@ -2,7 +2,7 @@ site_name: PredictiveMaintenance IoT Docs
 site_url: https://coreyleath-code.github.io/PredictiveMaintenance_IoT/
 repo_name: CoreyLeath-code/PredictiveMaintenance_IoT
 repo_url: https://github.com/CoreyLeath-code/PredictiveMaintenance_IoT
-edit_uri: blob/main/
+edit_uri: edit/main/docs/
 
 theme:
   name: material
@@ -12,17 +12,12 @@ theme:
     - navigation.sections
     - navigation.path
     - content.code.copy
-    - content.tabs.link
     - toc.follow
 
 nav:
   - Overview: index.md
-  - Architecture: docs/architecture.md
-  - API Reference: docs/api_reference.md
-  - Metrics: docs/metrics.md
-  - OpenAPI Spec: docs/openapi.json
-  - Changelog: CHANGELOG.md
-  - Contributing: CONTRIBUTING.md
+  - Engineering decisions: engineering-decisions.md
+  - Automation: automation/N8N.md
 
 markdown_extensions:
   - admonition
@@ -33,11 +28,6 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed
   - pymdownx.highlight
-  - pymdownx.extra
 
 plugins:
   - search
-  - mkdocs-git-revision-date-localized
-  - mike:              # optional versioned-docs
-      default_branch: gh-pages
-      default_version: latest
