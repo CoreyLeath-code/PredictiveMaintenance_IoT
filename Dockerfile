@@ -33,6 +33,11 @@ RUN apt-get update \
 RUN /usr/local/bin/python -m pip install --no-cache-dir --upgrade \
     "setuptools>=78.1.1" "wheel>=0.46.2" "jaraco.context>=6.1.0"
 
+# Remove obsolete bundled setuptools bootstrap wheels after installation;
+# runtime dependencies are already installed in /opt/venv.
+RUN find /usr/local/lib/python3.11/ensurepip/_bundled \
+    -type f -name "setuptools-*.whl" -delete
+
 RUN groupadd --system mlops \
     && useradd --system --gid mlops --uid 10001 --create-home mlops \
     && mkdir -p /app/models \
