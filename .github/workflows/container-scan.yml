@@ -4,6 +4,9 @@ on:
   push:
     branches: [ main ]
     paths: ["Dockerfile", ".github/workflows/container-scan.yml"]
+  pull_request:
+    branches: [ main ]
+    paths: ["Dockerfile", ".github/workflows/container-scan.yml"]
   schedule:
     - cron: "0 2 * * 1"   # Mondays 02:00 UTC
   workflow_dispatch: {}
