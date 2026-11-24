@@ -13,7 +13,6 @@ COPY requirements.txt .
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/python -m pip install --upgrade pip setuptools wheel \
     && /opt/venv/bin/python -m pip install -r requirements.txt \
-    && /opt/venv/bin/python -m pip install --upgrade \
        'setuptools>=78.1.1' 'urllib3>=2.8.0' 'msgpack>=1.2.3' \
     && /opt/venv/bin/python -m pip check
 
