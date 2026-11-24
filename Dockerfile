@@ -36,6 +36,18 @@ RUN groupadd --system mlops \
     && chown -R mlops:mlops /app
 
 COPY --from=builder /opt/venv /opt/venv
+
+# No package installation happens in the running container. Remove pip,
+# ensurepip and vendored installer bundles to minimize runtime attack surface.
+# Application dependencies remain installed in /opt/venv.
+RUN rm -rf /usr/local/lib/python3.15/ensurepip \
+    /usr/local/lib/python3.15/site-packages/pip \
+    /usr/local/lib/python3.15/site-packages/pip-*.dist-info \
+    /opt/venv/lib/python3.15/site-packages/pip \
+    /opt/venv/lib/python3.15/site-packages/pip-*.dist-info \
+    /opt/venv/lib/python3.15/site-packages/wheel \
+    /opt/venv/lib/python3.15/site-packages/wheel-*.dist-info
+
 COPY --chown=mlops:mlops src/ /app/src/
 
 # Model weights are intentionally not downloaded at image-build time. Mount a
