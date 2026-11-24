@@ -2,44 +2,67 @@ name: Container-Security-Scan
 
 on:
   push:
-    branches: [ main ]
-    paths: ["Dockerfile", ".github/workflows/container-scan.yml"]
+    branches: [main]
+    paths:
+      - Dockerfile
+      - requirements.txt
+      - .github/workflows/container-scan.yml
+  pull_request:
+    paths:
+      - Dockerfile
+      - requirements.txt
+      - .github/workflows/container-scan.yml
   schedule:
-    - cron: "0 2 * * 1"   # Mondays 02:00 UTC
-  workflow_dispatch: {}
+    - cron: "0 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   trivy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
-      - name: 📥 Checkout
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # Build image with latest tag for scanning
-      - name: 🏗 Build Docker image
-        run: |
-          docker build -t predmaint-scan:ci .
+      - name: Build Docker image
+        run: docker build --tag predmaint-scan:ci .
 
-      # Trivy vulnerability scan
-      - name: 🔎 Trivy vulnerability scan
-        uses: aquasecurity/trivy-action@0.16.0
-        with:
-          image-ref: predmaint-scan:ci
-          format: table
-          exit-code: 1
-          ignore-unfixed: true
-          severity: CRITICAL,HIGH
-
-      # Generate SPDX SBOM
-      - name: 📜 Generate SBOM (SPDX)
-        uses: aquasecurity/trivy-action@0.16.0
+      # v0.36.0, pinned to the signed release commit (no mutable tag).
+      - name: Generate SPDX SBOM
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
           image-ref: predmaint-scan:ci
           format: spdx-json
           output: sbom.spdx.json
+          exit-code: "0"
 
-      - name: 📤 Upload SBOM
-        uses: actions/upload-artifact@v7
+      - name: Upload SPDX SBOM
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          name: SBOM
+          name: container-sbom
           path: sbom.spdx.json
+          if-no-files-found: warn
+
+      # This gate must fail on fixable high/critical vulnerabilities.
+      # Do not use continue-on-error or reduce exit-code to 0.
+      - name: Trivy vulnerability scan
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
+        with:
+          image-ref: predmaint-scan:ci
+          format: json
+          output: trivy-findings.json
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH
+
+      - name: Upload container security findings
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: container-trivy-findings
+          path: trivy-findings.json
+          if-no-files-found: warn

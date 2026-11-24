@@ -12,7 +12,9 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN python -m venv /opt/venv \
     && /opt/venv/bin/python -m pip install --upgrade pip setuptools wheel \
-    && /opt/venv/bin/python -m pip install -r requirements.txt
+    && /opt/venv/bin/python -m pip install -r requirements.txt \
+       'setuptools>=78.1.1' 'urllib3>=2.8.0' 'msgpack>=1.2.3' \
+    && /opt/venv/bin/python -m pip check
 
 FROM python:3.15-slim AS runtime
 
@@ -23,12 +25,29 @@ ENV PATH=/opt/venv/bin:$PATH \
 
 WORKDIR /app
 
+# Refresh Debian security updates in the runtime layer, including zlib1g.
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN groupadd --system mlops \
     && useradd --system --gid mlops --uid 10001 --create-home mlops \
     && mkdir -p /app/models \
     && chown -R mlops:mlops /app
 
 COPY --from=builder /opt/venv /opt/venv
+
+# No package installation happens in the running container. Remove pip,
+# ensurepip and vendored installer bundles to minimize runtime attack surface.
+# Application dependencies remain installed in /opt/venv.
+RUN rm -rf /usr/local/lib/python3.15/ensurepip \
+    /usr/local/lib/python3.15/site-packages/pip \
+    /usr/local/lib/python3.15/site-packages/pip-*.dist-info \
+    /opt/venv/lib/python3.15/site-packages/pip \
+    /opt/venv/lib/python3.15/site-packages/pip-*.dist-info \
+    /opt/venv/lib/python3.15/site-packages/wheel \
+    /opt/venv/lib/python3.15/site-packages/wheel-*.dist-info
+
 COPY --chown=mlops:mlops src/ /app/src/
 
 # Model weights are intentionally not downloaded at image-build time. Mount a

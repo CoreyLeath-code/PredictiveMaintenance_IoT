@@ -3,13 +3,32 @@ name: Trivy Scan
 on:
   push:
     branches: [main]
+  pull_request:
+    paths:
+      - Dockerfile
+      - requirements.txt
+      - .github/workflows/trivy.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
-      - run: docker build -t predictive-maintenance .
-      - uses: aquasecurity/trivy-action@master
+
+      - name: Build Docker image
+        run: docker build --tag predictive-maintenance:ci .
+
+      # v0.36.0 (signed release commit); avoid mutable @master.
+      - name: Scan container image for fixable high/critical vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25
         with:
-          image-ref: predictive-maintenance
+          image-ref: predictive-maintenance:ci
+          format: table
+          severity: CRITICAL,HIGH
+          ignore-unfixed: true
+          exit-code: "1"
