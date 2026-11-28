@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload SPDX SBOM
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: container-sbom
           path: sbom.spdx.json
@@ -61,7 +61,7 @@ jobs:
 
       - name: Upload container security findings
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: container-trivy-findings
           path: trivy-findings.json
